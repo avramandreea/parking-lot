@@ -2,6 +2,8 @@ package org.parkinglot.parkinglot;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.HttpConstraint;
+import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,9 @@ import org.example.parkinglot.ejb.UsersBean;
 import java.io.IOException;
 import java.util.List;
 
+@ServletSecurity(
+        value = @HttpConstraint(rolesAllowed = {"WRITE_CARS"})
+)
 @WebServlet(name = "AddCar", value = "/AddCar")
 public class AddCar extends HttpServlet {
 
@@ -23,19 +28,24 @@ public class AddCar extends HttpServlet {
     CarsBean carsBean;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         List<UserDto> users = usersBean.findAllUsers();
         request.setAttribute("users", users);
-        request.getRequestDispatcher("/WEB-INF/pages/addCar.jsp").forward(request, response);
+
+        request.getRequestDispatcher("/WEB-INF/pages/addCar.jsp")
+                .forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         String licensePlate = request.getParameter("license_plate");
         String parkingSpot = request.getParameter("parking_spot");
         String userIdStr = request.getParameter("owner_id");
 
-        // backend validation
         if (userIdStr == null || userIdStr.isEmpty()) {
             request.setAttribute("errorMessage", "Please select an owner.");
             doGet(request, response);
@@ -43,8 +53,8 @@ public class AddCar extends HttpServlet {
         }
 
         Long userId = Long.parseLong(userIdStr);
-
         carsBean.createCar(licensePlate, parkingSpot, userId);
+
         response.sendRedirect(request.getContextPath() + "/Cars");
     }
 }
