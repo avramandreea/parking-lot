@@ -25,10 +25,7 @@ public class UsersBean {
 
     @Inject
     private PasswordBean passwordBean;
-
-    /**
-     * Returnează toți utilizatorii
-     */
+//returneaza toti utilizatorii
     public List<UserDto> findAllUsers() {
         LOG.info("findAllUsers");
         try {
@@ -41,9 +38,6 @@ public class UsersBean {
         }
     }
 
-    /**
-     * Creează un utilizator
-     */
     public void createUser(
             String username,
             String email,
@@ -67,9 +61,6 @@ public class UsersBean {
         }
     }
 
-    /**
-     * Asignează rolurile unui utilizator
-     */
     private void assignGroupsToUser(
             String username,
             Collection<String> groups
@@ -84,9 +75,7 @@ public class UsersBean {
         }
     }
 
-    /**
-     * Conversie Entity -> DTO
-     */
+
     private List<UserDto> copyUsersToDto(List<User> users) {
         List<UserDto> userDtos = new ArrayList<>();
         for (User user : users) {
@@ -97,5 +86,10 @@ public class UsersBean {
             ));
         }
         return userDtos;
+    }
+    public Collection<String> findUsernamesByUserIds(Collection<Long> userIds) {
+        List<String> usernames = entityManager.createQuery("SELECT u.username FROM User u WHERE u.id IN :userIds", String.class)
+                .setParameter("userIds", userIds).getResultList();
+        return usernames;
     }
 }

@@ -20,7 +20,6 @@ public class UserGroup {
         this.userGroup = userGroup;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

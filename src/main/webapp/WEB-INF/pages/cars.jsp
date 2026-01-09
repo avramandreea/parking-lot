@@ -8,7 +8,6 @@
 
     <form method="POST" action="${pageContext.request.contextPath}/Cars">
 
-        <!-- Add + Delete doar pentru WRITE_CARS -->
         <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
             <a href="${pageContext.request.contextPath}/AddCar"
                class="btn btn-primary btn-lg mb-3">
@@ -25,7 +24,6 @@
             <c:forEach var="car" items="${cars}">
                 <div class="row align-items-center mt-2">
 
-                    <!-- Checkbox doar pentru WRITE_CARS -->
                     <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
                         <div class="col">
                             <input type="checkbox"
@@ -46,8 +44,19 @@
                             ${car.ownerName}
                     </div>
 
-                    <!-- Edit doar pentru WRITE_CARS -->
+                    <div class="col">
+                        <img src="${pageContext.request.contextPath}/CarPhoto?id=${car.id}" width="48" />
+                    </div>
+
                     <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
+                        <div class="col">
+                            <a class="btn btn-secondary"
+                               href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}"
+                               role="button">
+                                Add photo
+                            </a>
+                        </div>
+
                         <div class="col">
                             <a class="btn btn-secondary"
                                href="${pageContext.request.contextPath}/EditCar?id=${car.id}">

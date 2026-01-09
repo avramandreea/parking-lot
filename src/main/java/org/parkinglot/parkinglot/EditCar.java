@@ -32,12 +32,15 @@ public class EditCar extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        Long carId = Long.parseLong(request.getParameter("id"));
+
+        CarDto car = carsBean.findById(carId);
+        request.setAttribute("car", car);
+
         List<UserDto> users = usersBean.findAllUsers();
         request.setAttribute("users", users);
 
-        Long carId = Long.parseLong(request.getParameter("id"));
-        CarDto car = carsBean.findById(carId);
-        request.setAttribute("car", car);
+        request.setAttribute("photo", carsBean.findPhotoByCarId(carId));
 
         request.getRequestDispatcher("/WEB-INF/pages/editCar.jsp")
                 .forward(request, response);

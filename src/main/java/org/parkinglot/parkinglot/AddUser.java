@@ -23,14 +23,10 @@ public class AddUser extends HttpServlet {
     @Inject
     private UsersBean usersBean;
 
-    /**
-     * Afișează formularul de creare utilizator
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Lista de roluri disponibile (exact ca în laborator)
         List<String> userGroups = Arrays.asList(
                 "READ_CARS",
                 "WRITE_CARS",
@@ -43,9 +39,7 @@ public class AddUser extends HttpServlet {
                 .forward(request, response);
     }
 
-    /**
-     * Creează utilizatorul
-     */
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -55,7 +49,6 @@ public class AddUser extends HttpServlet {
         String password = request.getParameter("password");
         String[] selectedGroups = request.getParameterValues("userGroups");
 
-        // Validare minimă
         if (username == null || username.isEmpty()
                 || email == null || email.isEmpty()
                 || password == null || password.isEmpty()
@@ -67,7 +60,6 @@ public class AddUser extends HttpServlet {
             return;
         }
 
-        // Creează utilizatorul + rolurile
         usersBean.createUser(
                 username,
                 email,
@@ -75,7 +67,6 @@ public class AddUser extends HttpServlet {
                 Arrays.asList(selectedGroups)
         );
 
-        // După creare → înapoi la listă
         response.sendRedirect(request.getContextPath() + "/Users");
     }
 }

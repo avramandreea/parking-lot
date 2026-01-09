@@ -6,7 +6,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.example.parkinglot.common.CarDto;
+import org.example.parkinglot.common.CarPhotoDto;
 import org.example.parkinglot.entities.Car;
+import org.example.parkinglot.entities.CarPhoto;
 import org.example.parkinglot.entities.User;
 
 import java.util.ArrayList;
@@ -16,40 +18,22 @@ import java.util.logging.Logger;
 
 @Stateless
 public class CarsBean {
+
     private static final Logger LOG = Logger.getLogger(CarsBean.class.getName());
 
     @PersistenceContext
     EntityManager entityManager;
 
-    public List<CarDto> findAllCars(){
+    public List<CarDto> findAllCars() {
         LOG.info("findAllCars");
-        try{
-            TypedQuery<Car> typedQuery = entityManager.createQuery("SELECT c FROM Car c", Car.class);
+        try {
+            TypedQuery<Car> typedQuery =
+                    entityManager.createQuery("SELECT c FROM Car c", Car.class);
             List<Car> cars = typedQuery.getResultList();
             return copyCarsToDto(cars);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             throw new EJBException(ex);
         }
-    }
-
-    public List<CarDto> copyCarsToDto(List<Car> cars) {
-        List<CarDto> carDtos = new ArrayList<>();
-
-        for (Car car : cars) {
-            Long id = car.getId();
-            String licensePlate = car.getLicensePlate();
-            String parkingSpot = car.getParkingSpot();
-            String ownerName = null;
-
-            if (car.getOwner() != null) {
-                ownerName = car.getOwner().getUsername();
-            }
-
-            CarDto carDto = new CarDto(id, licensePlate, parkingSpot, ownerName);
-            carDtos.add(carDto);
-        }
-
-        return carDtos;
     }
 
     public void createCar(String licensePlate, String parkingSpot, Long userId) {
@@ -66,23 +50,33 @@ public class CarsBean {
         entityManager.persist(car);
     }
 
+    private List<CarDto> copyCarsToDto(List<Car> cars) {
+        List<CarDto> carDtos = new ArrayList<>();
+        for (Car car : cars) {
+            carDtos.add(new CarDto(
+                    car.getId(),
+                    car.getLicensePlate(),
+                    car.getParkingSpot(),
+                    car.getOwner().getUsername()
+            ));
+        }
+        return carDtos;
+    }
+
     public CarDto findById(Long carId) {
         LOG.info("findById: " + carId);
 
         try {
             Car car = entityManager.find(Car.class, carId);
-
             if (car == null) {
                 return null;
             }
-
-            String ownerName = car.getOwner() != null ? car.getOwner().getUsername() : null;
 
             return new CarDto(
                     car.getId(),
                     car.getLicensePlate(),
                     car.getParkingSpot(),
-                    ownerName
+                    car.getOwner().getUsername()
             );
         } catch (Exception ex) {
             throw new EJBException(ex);
@@ -111,5 +105,50 @@ public class CarsBean {
             Car car = entityManager.find(Car.class, carId);
             entityManager.remove(car);
         }
+    }
+
+    public void addPhotoToCar(Long carId, String filename, String fileType, byte[] fileContent) {
+        LOG.info("addPhotoToCar");
+
+        Car car = entityManager.find(Car.class, carId);
+
+        if (car.getPhoto() != null) {
+            entityManager.remove(car.getPhoto());
+        }
+
+        CarPhoto photo = new CarPhoto();
+        photo.setFilename(filename);
+        photo.setFileType(fileType);
+        photo.setFileContent(fileContent);
+
+        photo.setCar(car);
+        car.setPhoto(photo);
+
+        entityManager.persist(photo);
+    }
+
+    public CarPhotoDto findPhotoByCarId(Long carId) {
+        LOG.info("findPhotoByCarId");
+
+        List<CarPhoto> photos = entityManager
+                .createQuery(
+                        "SELECT p FROM CarPhoto p WHERE p.car.id = :id",
+                        CarPhoto.class
+                )
+                .setParameter("id", carId)
+                .getResultList();
+
+        if (photos.isEmpty()) {
+            return null;
+        }
+
+        CarPhoto photo = photos.get(0);
+
+        return new CarPhotoDto(
+                photo.getId(),
+                photo.getFilename(),
+                photo.getFileType(),
+                photo.getFileContent()
+        );
     }
 }
