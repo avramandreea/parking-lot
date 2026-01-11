@@ -151,4 +151,9 @@ public class CarsBean {
                 photo.getFileContent()
         );
     }
+    public int getFreeParkingSpots() {
+        int totalSpots = 10;
+        return totalSpots - findAllCars().size();
+    }
+
 }

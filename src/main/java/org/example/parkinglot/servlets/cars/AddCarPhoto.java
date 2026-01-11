@@ -1,8 +1,10 @@
-package org.parkinglot.parkinglot;
+package org.example.parkinglot.servlets.cars;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.HttpConstraint;
 import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.ServletSecurity;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
@@ -13,6 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @MultipartConfig
+@ServletSecurity(
+        value = @HttpConstraint(rolesAllowed = {"WRITE_CARS"})
+)
 @WebServlet(name = "AddCarPhoto", value = "/AddCarPhoto")
 public class AddCarPhoto extends HttpServlet {
 
@@ -28,7 +33,7 @@ public class AddCarPhoto extends HttpServlet {
 
         request.setAttribute("car", car);
 
-        request.getRequestDispatcher("/WEB-INF/pages/addCarPhoto.jsp")
+        request.getRequestDispatcher("/WEB-INF/pages/cars/addCarPhoto.jsp")
                 .forward(request, response);
     }
 
@@ -37,27 +42,30 @@ public class AddCarPhoto extends HttpServlet {
             throws ServletException, IOException {
 
         Long carId = Long.parseLong(request.getParameter("car_id"));
-
         Part filePart = request.getPart("file");
+
         String filename = getFileName(filePart);
         String fileType = filePart.getContentType();
 
         InputStream inputStream = filePart.getInputStream();
-        byte[] fileContent = new byte[inputStream.available()];
-        inputStream.read(fileContent);
+        byte[] fileContent = inputStream.readAllBytes();
         inputStream.close();
 
         carsBean.addPhotoToCar(carId, filename, fileType, fileContent);
 
-        response.sendRedirect(request.getContextPath() + "/Cars");
+
+        response.sendRedirect(
+                request.getContextPath() + "/EditCar?id=" + carId
+        );
     }
 
     private String getFileName(Part part) {
         String header = part.getHeader("content-disposition");
         for (String cd : header.split(";")) {
             if (cd.trim().startsWith("filename")) {
-                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-                return filename;
+                return cd.substring(cd.indexOf('=') + 1)
+                        .trim()
+                        .replace("\"", "");
             }
         }
         return null;

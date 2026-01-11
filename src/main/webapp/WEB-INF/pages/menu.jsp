@@ -61,18 +61,6 @@
                         </c:if>
                     </li>
 
-                    <!-- Link generic -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-
-                    <!-- Disabled -->
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">
-                            Disabled
-                        </a>
-                    </li>
-
                 </ul>
 
                 <!-- Login / Logout -->

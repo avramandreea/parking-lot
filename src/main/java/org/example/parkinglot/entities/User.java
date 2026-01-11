@@ -1,26 +1,50 @@
 package org.example.parkinglot.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username")
+        }
+)
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "username")
+    @NotNull
+    @Size(min = 3, max = 50)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "email")
+    @NotNull
+    @Email
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @NotNull
+    @Size(min = 6)
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "owner", orphanRemoval = true)
+    private List<Car> cars = new ArrayList<>();
+
+    // ===== GETTERS & SETTERS =====
+
+    public Long getId() {
+        return id;
+    }
 
     public String getUsername() {
         return username;
@@ -30,16 +54,9 @@ public class User {
         this.username = username;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
-
-    @OneToMany(mappedBy = "owner", orphanRemoval = true)
-    private List<Car> cars = new ArrayList<>();
 
     public List<Car> getCars() {
         return cars;

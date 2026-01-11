@@ -1,4 +1,4 @@
-package org.parkinglot.parkinglot;
+package org.example.parkinglot.servlets.users;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;

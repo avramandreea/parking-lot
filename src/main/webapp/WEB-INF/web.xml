@@ -29,4 +29,8 @@
         <role-name>WRITE_CARS</role-name>
     </security-role>
 
+    <security-role>
+        <role-name>INVOICING</role-name>
+    </security-role>
+
 </web-app>

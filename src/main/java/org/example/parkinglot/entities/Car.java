@@ -1,6 +1,8 @@
 package org.example.parkinglot.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "cars")
@@ -11,12 +13,16 @@ public class Car {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "license_plate")
+    @NotNull
+    @Size(min = 1, max = 10)
+    @Column(name = "license_plate", nullable = false, length = 10)
     private String licensePlate;
 
-    @Column(name = "parking_spot")
+    @NotNull
+    @Column(name = "parking_spot", nullable = false)
     private String parkingSpot;
 
+    @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
@@ -24,6 +30,7 @@ public class Car {
     @OneToOne(mappedBy = "car", cascade = CascadeType.ALL)
     private CarPhoto photo;
 
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;

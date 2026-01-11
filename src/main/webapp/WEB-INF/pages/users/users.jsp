@@ -16,10 +16,12 @@
     <form method="POST"
           action="${pageContext.request.contextPath}/Users">
 
-        <button type="submit"
-                class="btn btn-secondary mb-3">
-            Invoice
-        </button>
+        <c:if test="${pageContext.request.isUserInRole('INVOICING')}">
+            <button type="submit"
+                    class="btn btn-secondary mb-3">
+                Invoice
+            </button>
+        </c:if>
 
         <div class="container text-center">
 
@@ -27,19 +29,26 @@
                 <div class="col-1"></div>
                 <div class="col">Username</div>
                 <div class="col">Email</div>
+                <div class="col">Actions</div>
             </div>
 
             <c:forEach var="user" items="${users}">
                 <div class="row mb-2">
                     <div class="col-1">
-
-
                         <input type="checkbox"
                                name="user_ids"
                                value="${user.id}" />
                     </div>
+
                     <div class="col">${user.username}</div>
                     <div class="col">${user.email}</div>
+
+                    <div class="col">
+                        <a href="${pageContext.request.contextPath}/EditUser?id=${user.id}"
+                           class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+                    </div>
                 </div>
             </c:forEach>
 

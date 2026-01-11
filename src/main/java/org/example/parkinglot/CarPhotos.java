@@ -1,4 +1,4 @@
-package org.parkinglot.parkinglot;
+package org.example.parkinglot;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.*;
@@ -10,7 +10,7 @@ import org.example.parkinglot.ejb.CarsBean;
 import java.io.IOException;
 
 @WebServlet(name = "CarPhoto", value = "/CarPhoto")
-public class CarPhoto extends HttpServlet {
+public class CarPhotos extends HttpServlet {
 
     @Inject
     CarsBean carsBean;

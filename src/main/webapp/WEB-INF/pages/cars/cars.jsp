@@ -6,6 +6,11 @@
 
     <h1>Cars</h1>
 
+    <!-- ✅ Task 4: Free parking spots -->
+    <h5 class="mb-4">
+        Free parking spots: <strong>${numberOfFreeParkingSpots}</strong>
+    </h5>
+
     <form method="POST" action="${pageContext.request.contextPath}/Cars">
 
         <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
@@ -51,8 +56,7 @@
                     <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
                         <div class="col">
                             <a class="btn btn-secondary"
-                               href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}"
-                               role="button">
+                               href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}">
                                 Add photo
                             </a>
                         </div>
@@ -67,10 +71,6 @@
 
                 </div>
             </c:forEach>
-
-            <h5 class="mt-4">
-                Free parking spots: ${numberOfFreeParkingSpots}
-            </h5>
 
         </div>
 

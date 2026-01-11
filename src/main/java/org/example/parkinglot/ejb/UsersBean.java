@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+
 import org.example.parkinglot.common.UserDto;
 import org.example.parkinglot.entities.User;
 import org.example.parkinglot.entities.UserGroup;
@@ -25,7 +26,8 @@ public class UsersBean {
 
     @Inject
     private PasswordBean passwordBean;
-//returneaza toti utilizatorii
+
+
     public List<UserDto> findAllUsers() {
         LOG.info("findAllUsers");
         try {
@@ -53,7 +55,6 @@ public class UsersBean {
             newUser.setPassword(passwordBean.convertToSha256(password));
 
             entityManager.persist(newUser);
-
             assignGroupsToUser(username, groups);
 
         } catch (Exception ex) {
@@ -75,7 +76,6 @@ public class UsersBean {
         }
     }
 
-
     private List<UserDto> copyUsersToDto(List<User> users) {
         List<UserDto> userDtos = new ArrayList<>();
         for (User user : users) {
@@ -87,9 +87,41 @@ public class UsersBean {
         }
         return userDtos;
     }
+
     public Collection<String> findUsernamesByUserIds(Collection<Long> userIds) {
-        List<String> usernames = entityManager.createQuery("SELECT u.username FROM User u WHERE u.id IN :userIds", String.class)
-                .setParameter("userIds", userIds).getResultList();
-        return usernames;
+        return entityManager
+                .createQuery(
+                        "SELECT u.username FROM User u WHERE u.id IN :userIds",
+                        String.class
+                )
+                .setParameter("userIds", userIds)
+                .getResultList();
+    }
+
+
+    public UserDto findById(Long id) {
+        LOG.info("findById");
+
+        User user = entityManager.find(User.class, id);
+
+        return new UserDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
+    }
+
+    public void updateEmail(Long id, String email) {
+        LOG.info("updateEmail");
+
+        User user = entityManager.find(User.class, id);
+        user.setEmail(email);
+    }
+
+    public void changePassword(Long id, String password) {
+        LOG.info("changePassword");
+
+        User user = entityManager.find(User.class, id);
+        user.setPassword(passwordBean.convertToSha256(password));
     }
 }
